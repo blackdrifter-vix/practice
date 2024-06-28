@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-public-dns 'bash -s' << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-110-219-106.ap-south-1.compute.amazonaws.com 'bash -s' << 'EOF'
             cd /var/www/html/practice
             git pull origin main
             # Run your build and deployment commands here
