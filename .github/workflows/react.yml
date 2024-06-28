@@ -18,14 +18,14 @@ jobs:
             USER_NAME: ${{secrets.EC2_USER}}
 
         run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+          echo "$PRIVATE_KEY" > private_key
+          chmod 600 private_key
+          ls -la private_key # List file details to ensure it exists and has the right permissions
+          ssh -v -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             cd /var/www/html/practice &&
             git pull origin main &&
-            # Run your build and deployment commands here
-            # For example, if you are using Node.js
             npm install &&
             npm install pm2 &&
             npm run build &&
-            pm2 restart all # If you are using PM2 to manage your node processes
+            pm2 restart all
           '
