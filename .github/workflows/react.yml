@@ -12,21 +12,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        env:
+            PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            HOSTNAME: ${{secrets.EC2_HOST}}
+            USER_NAME: ${{secrets.EC2_USER}}
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-110-219-106.ap-south-1.compute.amazonaws.com 'bash -s' << 'EOF'
-            cd /var/www/html/practice
-            git pull origin main
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            cd /var/www/html/practice &&
+            git pull origin main &&
             # Run your build and deployment commands here
             # For example, if you are using Node.js
-            npm install
-            npm install pm2
-            npm run build
+            npm install &&
+            npm install pm2 &&
+            npm run build &&
             pm2 restart all # If you are using PM2 to manage your node processes
-          EOF
+          '
